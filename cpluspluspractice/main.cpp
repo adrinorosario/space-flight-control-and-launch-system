@@ -116,7 +116,7 @@ public:
     }
     
     // Return by reference function for rocket_name
-    string& getRocketName() {
+    string &getRocketName() {
         return rocket_name;
     }
     
@@ -160,10 +160,12 @@ int Rockets::totalRockets = 0;
 
 class Astronauts {
 private:
-    string first_name, last_name, current_mission_name;
+    string current_mission_name;
     int age, number_of_missions_completed, number_of_hours_in_space, training_hours_completed, inputStauts;
     
 public:
+    string first_name, last_name;
+    
     Astronauts() {
         inputStauts = true;
         first_name = "Astronaut";
@@ -259,6 +261,130 @@ void displayMissionSummary(Rockets &rocket) {
     cout<<"Rocket Name: "<<rocket.rocket_name<<"\nRocket ID: "<<rocket.rocket_id<<endl<<"Launch Site: "<<rocket.launch_site<<"\nTarget Destination: "<<rocket.target_destination<<endl<<endl;
 }
 
+class Satellites {
+private:
+    string satellite_name;
+    string satellite_type;  // e.g., communication, weather, GPS, etc.
+    float satellite_weight;
+    string orbit_destination;
+
+public:
+    Satellites() {
+        satellite_name = "";
+        satellite_type = "";
+        satellite_weight = 0.0;
+        orbit_destination = "";
+    }
+
+    Satellites(string name, string type, float weight, string orbit) {
+        satellite_name = name;
+        satellite_type = type;
+        satellite_weight = weight;
+        orbit_destination = orbit;
+    }
+    
+    void input_satellite_details() {
+        cout << "Enter Satellite Name: ";
+        cin >> satellite_name;
+        cout << "Enter Satellite Type: ";
+        cin >> satellite_type;
+        cout << "Enter Satellite Weight: ";
+        cin >> satellite_weight;
+        cout << "Enter Orbit Destination: ";
+        cin >> orbit_destination;
+    }
+    
+    void satellite_details() {
+        cout << "\nSatellite Name: " << satellite_name << endl;
+        cout << "Type: " << satellite_type << endl;
+        cout << "Weight: " << satellite_weight << " kg" << endl;
+        cout << "Orbit Destination: " << orbit_destination << endl << endl;
+    }
+};
+
+class MissionLogs {
+protected:
+    int logId;
+    string logName, logDescription;
+    bool isCritical, isIssue, isVulnerability;
+
+public:
+    MissionLogs() {
+        logId = rand();
+        logName = "";
+        logDescription = "";
+        isCritical =  false;
+        isIssue = false;
+        isVulnerability = false;
+    }
+    
+    MissionLogs(int id, string name, bool isCritical) {
+        logId = id;
+        logName = name;
+        isCritical = isCritical;
+    }
+    
+    void inputLog() {
+        cout<<"Enter the Log Name:\n";
+        cin>>logName;
+        cout<<"Enter the description or log datas (keep it descriptive for further analysis):\n";
+        cin>>logDescription;
+        cout<<"Is it the critical? (Does the log pertain to something that can affect the mission or future missions?):\n";
+        cin>>isCritical;
+        cout<<"Is it an issue?:\n";
+        cin>>isIssue;
+        cout<<"Is it a vulnerability in an asepct of the mission?:\n";
+        cin>>isVulnerability;
+    }
+};
+
+
+class MissionControl {
+private:
+    string mission_name;
+    Rockets rocket;
+    Astronauts astronaut;
+    bool missionSuccess;
+    
+    static MissionLogs logs[1000000];
+    
+
+public:
+    MissionControl() {
+        mission_name = "";
+        rocket = Rockets(0, 0.00, 0.00, 0.00, "rocket_x", "site_x", "target_x");
+        astronaut = Astronauts("", "", "mission_x", 0, 0, 0, 0);
+        missionSuccess = false;
+    }
+    
+    
+    MissionControl(string m_name, Rockets r, Astronauts a) {
+        mission_name = m_name;
+        rocket = r;
+        astronaut = a;
+        missionSuccess = false;
+    }
+    
+    void startMission() {
+        cout << "Starting mission: " << mission_name << endl;
+        if (rocket.getRocketName() != "" && astronaut.first_name != "") {
+            rocket.launch();
+            missionSuccess = true;
+            cout << "Mission " << mission_name << " is successful!" << endl;
+        } else {
+            cout << "Mission " << mission_name << " cannot be started due to missing details." << endl;
+        }
+    }
+    
+    void missionDetails() {
+        cout << "Mission Name: " << mission_name << endl;
+        rocket.rocket_details();
+        astronaut.astronaut_data();
+        cout << "Mission Status: " << (missionSuccess ? "Successful" : "Not Launched") << endl << endl;
+    }
+};
+
+
 
 int main(int argc, const char * argv[]) {
     cout<<"\tSPACE FLIGHT CONTROL AND LAUNCH SYSTEM\n\n";
@@ -335,6 +461,26 @@ int main(int argc, const char * argv[]) {
 //            cout<<"Something went wrong\n";
 //    }
     
+//---------------------------------------------------------------------------------------------------------
+    
+    /*
+
+         Rockets r1(55.6, 5.4, "Vulcan_Centaur");
+         Astronauts a1("John", "Doe", "Lunar Mission", 32, 3, 120, 250);
+         Satellites s1("ComSat-X", "Communication", 1500.5, "GEO");
+
+         // Display rocket, astronaut, and satellite details
+         r1.rocket_details();
+         a1.astronaut_data();
+         s1.satellite_details();
+
+         // Create a mission
+         MissionControl mission("MoonLanding", r1, a1);
+         mission.startMission();
+         mission.missionDetails();
+
+     */
+    
 
     //Astronauts a1("Michael", "Trevor", "Artemis Moon Landing", 31, 4, 57, 142);
     //a1.input_astronaut_data("Adrino", "Rosario", 45);
@@ -363,3 +509,4 @@ int main(int argc, const char * argv[]) {
 
     return 0;
 }
+
