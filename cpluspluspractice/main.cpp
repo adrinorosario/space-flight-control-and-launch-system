@@ -14,14 +14,18 @@ using namespace std;
 class Rockets {
 private:
     static int totalRockets;
-    int rocket_id;
     float height, diameter, fuel_level, thrust;
-    string rocket_name, launch_site, target_destination;
+    string launch_site, target_destination;
     bool inputStatus;
         
 public:
+    int rocket_id;
+    string rocket_name;
+    
+    // default constructor
     Rockets() {
         inputStatus = true;
+        rocket_id = 0;
         fuel_level = 0.00;
         thrust = 50.0;
         height = 0.00;
@@ -32,19 +36,21 @@ public:
         totalRockets++;
     }
     
+    // parameterized constructor
     Rockets(int id, float fuel, float height, float diameter, string name, string site, string target) {
         rocket_id = id;
         inputStatus = true;
         fuel_level = fuel;
         thrust = 50.0;
-        height = height;
-        diameter = diameter;
+        this -> height = height;
+        this -> diameter = diameter;
         rocket_name = name;
         launch_site = site;
         target_destination = target;
         totalRockets++;
     }
     
+    // parameterized constructor
     Rockets(float height, float diameter, string name) {
         rocket_id = rand();
         inputStatus = true;
@@ -58,6 +64,7 @@ public:
         totalRockets++;
     }
     
+    // copy constructor
     Rockets(Rockets &rocket) {
         rocket_id = rocket.rocket_id;
         inputStatus = true;
@@ -71,10 +78,50 @@ public:
         totalRockets++;
     }
     
+    bool operator==(Rockets &x) {
+        return(this -> rocket_name == x.rocket_name || this -> rocket_id == x.rocket_id);
+    }
+    
+    bool operator>(Rockets &x) const {
+        return this->height > x.height;
+    }
+    
+    Rockets& operator++() {
+        this->rocket_id++;
+        return *this;
+    }
+    
+    
+    Rockets& operator--() {
+        this->rocket_id--;
+        return *this;
+    }
+    
+    bool operator!() {
+        return this->fuel_level < 50.0; // true if fuel is too low for launching the rocket
+    }
+    
+    // static function to return the total number of rockets
     static int getTotalRockets() {
         return totalRockets;
     }
     
+    // Overload [] operator (subscript operator)
+    string &operator[](int index) {
+        if (index == 0)
+            return rocket_name;
+        else if (index == 1)
+            return launch_site;
+        else if (index == 2)
+            return target_destination;
+        else {
+            cout << "Index out of bounds, returning rocket_name by default." << endl;
+            return rocket_name;  // Default case
+        }
+    }
+
+    
+    // function to input the rocket details
     void input_details() {
         while(inputStatus) {
             cout<<"Enter the Rocket ID and Rocket Name:\n";
@@ -99,6 +146,7 @@ public:
         }
     }
 
+    // function to display the rocket details
     void rocket_details() {
         cout<<"\n\nRocket name: "<<rocket_name<<"\nRocket ID: "<<rocket_id<<"\nHeight: "<<height<<"\nDiameter: "<<diameter<<"\nLaunch Site: "<<launch_site<<"\nTarget Destination: "<<target_destination<<endl<<endl;
     }
@@ -154,9 +202,123 @@ public:
         }
     }
     
+    // declaration of the friend function
     friend void displayMissionSummary(Rockets &rocket);
 };
+
+// initialising the static data member with an initial value
 int Rockets::totalRockets = 0;
+
+// simple inheritance implementation
+class SpaceShuttle: public Rockets {
+private:
+    int passengerCount;
+    bool isReusable;
+    
+public:
+    SpaceShuttle() {
+        Rockets();
+        passengerCount = 0;
+        isReusable = true;
+    }
+    
+    void setPassengerCount() {
+        cout<<"Enter the number of passengers/crew: ";
+    }
+    
+    int getPassengerCount() {
+        return passengerCount;
+    }
+    
+    void setResuability() {
+        cout<<"Is the rocket reusable?";
+        cin>>isReusable;
+    }
+    
+    bool getReusability() {
+        return isReusable;
+    }
+    
+    void getShuttleDetails() {
+        cout<<"Passenger count: "<<passengerCount<<endl;
+        cout<<"Reusable: "<< (isReusable ? "Yes" : "No")<<endl;
+    }
+};
+
+class Engine {
+protected:
+    string engineType;
+    float thrust;
+
+public:
+    Engine(string type = "", float t = 0.0) {
+        engineType = type;
+        thrust = t;
+    }
+    
+    void setEngineDetails(string type, float t) {
+        engineType = type; thrust = t;
+    }
+    
+    void displayEngineDetails() const {
+        cout << "Engine Type: " << engineType << ", Thrust: " << thrust << " kN" << endl;
+    }
+};
+
+// multiple inheritance implementation
+class Spacecraft: public Rockets, public Engine {
+protected:
+    string propulsion_system;
+    int crewCapacity;
+    
+public:
+    Spacecraft() {
+        propulsion_system = "";
+        crewCapacity = 0;
+        Rockets();
+        Rockets::input_details();
+    }
+    
+    void input_propulsion() {
+        cout<<"Enter the propulsion system used by the spacecraft: ";
+        cin>>propulsion_system;
+    }
+    
+    string getPropulsionSystem() {
+        return propulsion_system;
+    }
+    
+    void displaySpaceCraftDetails() {
+        rocket_details();
+        displayEngineDetails();
+        cout << "Crew Capacity: " << crewCapacity << endl;
+    }
+};
+
+class Rover: public Spacecraft {
+private:
+    int lifespan;
+    
+public:
+    Rover() {
+        Spacecraft();
+        lifespan = 0;
+    }
+    
+    void setLife() {
+        cout<<"Enter the lifespan of the rover in 'Sols':";
+        cin>>lifespan;
+    }
+    
+    int getLife() {
+        return lifespan;
+    }
+    
+    void displayRoverDetails() {
+        cout<<"Propulsion System: "<<propulsion_system<<endl;
+        cout<<"Life span in Sols: "<<lifespan<<endl;
+    }
+};
 
 class Astronauts {
 private:
@@ -166,6 +328,7 @@ private:
 public:
     string first_name, last_name;
     
+    // default constructor
     Astronauts() {
         inputStauts = true;
         first_name = "Astronaut";
@@ -177,6 +340,7 @@ public:
         training_hours_completed = 0;
     }
     
+    // parameterized constructor
     Astronauts(string fname, string lname, string cur_mis, int age, int numMisComp, int numHrsSpc, int trainHrsComp) {
         inputStauts = true;
         first_name = fname;
@@ -188,6 +352,7 @@ public:
         training_hours_completed = trainHrsComp;
     }
     
+    // parameterized constructor
     Astronauts(string fname, string lname, int age) {
         inputStauts = true;
         first_name = fname;
@@ -199,6 +364,7 @@ public:
         training_hours_completed = 0;
     }
     
+    // function to input the astronaut data
     void input_astronaut_data(){
         
         while(inputStauts) {
@@ -256,6 +422,7 @@ public:
     
 };
 
+// friend function definition
 void displayMissionSummary(Rockets &rocket) {
     cout << "\nMission Summary:\n";
     cout<<"Rocket Name: "<<rocket.rocket_name<<"\nRocket ID: "<<rocket.rocket_id<<endl<<"Launch Site: "<<rocket.launch_site<<"\nTarget Destination: "<<rocket.target_destination<<endl<<endl;
@@ -264,7 +431,7 @@ void displayMissionSummary(Rockets &rocket) {
 class Satellites {
 private:
     string satellite_name;
-    string satellite_type;  // e.g., communication, weather, GPS, etc.
+    string satellite_type;
     float satellite_weight;
     string orbit_destination;
 
@@ -302,8 +469,99 @@ public:
     }
 };
 
+class SpaceVehicle {
+public:
+    virtual void launch() { }
+    virtual void displayStatus() { }
+    virtual ~SpaceVehicle() { }
+};
+
+class ISS: public Rockets, public SpaceVehicle {
+private:
+    double altitude;
+    double velocity;
+    int crewCapacity;
+    int currentCrewCount;
+    double oxygenLevel;
+    double waterLevel;
+    double foodSupply;
+    bool dockingPortAvailable;
+    
+public:
+    ISS() {
+        altitude = 420.0;
+        velocity = 7.66;
+        crewCapacity = 7;
+        currentCrewCount = 0;
+        oxygenLevel = 100.0;
+        waterLevel = 100.0;
+        foodSupply = 100.0;
+        dockingPortAvailable = true;
+    }
+    
+    virtual void launch() override {
+        cout<<"ISS already in orbit\n\n";
+    }
+    
+    
+    void updateResourceStatus() {
+        oxygenLevel -= 0.1;
+        waterLevel -= 0.2;
+        foodSupply -= 0.15;
+        oxygenLevel = (oxygenLevel < 0) ? 0 : oxygenLevel;
+        waterLevel = (waterLevel < 0) ? 0 : waterLevel;
+        foodSupply = (foodSupply < 0) ? 0 : foodSupply;
+    }
+    
+    void dockSpacecraft(Rockets r) {
+        if(!dockingPortAvailable) { // not operator
+            cout<<"Failed to dock "<<r.rocket_name<<": No docking port available.\n";
+        } else {
+            dockingPortAvailable = false;
+            cout<<r.rocket_name<<" successfully docked with ISS.\n";
+        }
+    }
+    
+    void undockSpacecraft() {
+        
+        dockingPortAvailable = true;
+        cout<<"Spacecraft undocked from ISS.\n";
+    }
+    
+    void addCrewMember() {
+        if (currentCrewCount < crewCapacity) {
+            currentCrewCount++;
+            cout<<"Crew member added. Current crew count: "<<currentCrewCount<<endl;
+        } else {
+            cout<<"Cannot add crew member. ISS at maximum capacity."<<endl;
+        }
+    }
+
+    void removeCrewMember() {
+        if (currentCrewCount > 0) {
+            currentCrewCount--;
+            cout<<"Crew member removed. Current crew count: "<<currentCrewCount<<endl;
+        } else {
+            cout<<"No crew members to remove."<<endl;
+        }
+    }
+    
+    virtual void displayStatus() override {
+        cout<<"\n---ISS Status---"<<endl;
+        cout<<"Altitude: "<<altitude<< " km"<<endl;
+        cout<<"Velocity: "<<velocity<<" km/s"<<endl;
+        cout<<"Crew: "<<currentCrewCount<< "/"<<crewCapacity<<endl;
+        cout<<"Oxygen Level: "<<oxygenLevel<< "%"<<endl;
+        cout<<"Water Level: "<<waterLevel<< "%"<<endl;
+        cout<<"Food Supply: "<<foodSupply<<"%"<<endl;
+        cout<<"Docking Port Available: "<<(dockingPortAvailable ? "Yes" : "No")<<endl;
+    }
+    
+    
+};
+
 class MissionLogs {
-protected:
+public:
     int logId;
     string logName, logDescription;
     bool isCritical, isIssue, isVulnerability;
@@ -346,7 +604,8 @@ private:
     Astronauts astronaut;
     bool missionSuccess;
     
-    static MissionLogs logs[1000000];
+    MissionLogs logs[1000000];
+    int logCount;
     
 
 public:
@@ -355,6 +614,7 @@ public:
         rocket = Rockets(0, 0.00, 0.00, 0.00, "rocket_x", "site_x", "target_x");
         astronaut = Astronauts("", "", "mission_x", 0, 0, 0, 0);
         missionSuccess = false;
+        logCount = 0;
     }
     
     
@@ -363,6 +623,7 @@ public:
         rocket = r;
         astronaut = a;
         missionSuccess = false;
+        logCount = 0;
     }
     
     void startMission() {
@@ -380,133 +641,221 @@ public:
         cout << "Mission Name: " << mission_name << endl;
         rocket.rocket_details();
         astronaut.astronaut_data();
-        cout << "Mission Status: " << (missionSuccess ? "Successful" : "Not Launched") << endl << endl;
+        cout << "Mission Status: " << (missionSuccess?"Successful":"Not Launched") << endl << endl;
+    }
+    
+    void inputMissionLog() {
+        logs[logCount].inputLog();
+        logCount++;
+    }
+    
+    void displayMissionLogs() {
+        for(int i = 0; i < logCount; i++) {
+            cout<<"Log name: "<<logs[i].logName<<endl;
+            cout<<"Log description: "<<logs[i].logDescription<<endl;
+        }
     }
 };
 
 
-
-int main(int argc, const char * argv[]) {
-    cout<<"\tSPACE FLIGHT CONTROL AND LAUNCH SYSTEM\n\n";
+int main() {
+    cout << "Starting program with basic menu and Rockets functionality...\n\n";
 
     
-//    char c;
-//    cout<<"Enter 'A' to enter the astronaut details and 'R' to enter the rocket details:\n";
-//    cin>>c;
-//    
-//    switch (c) {
-//        case 'A': {
-//            int n = 0;
-//            while(!n) {
-//                cout<<"Enter the number of rockets:\n";
-//                cin>>n;
-//                if(n < 1){
-//                    cout<<"Size cannot be less than 1. Re-enter the size.\n";
-//                    continue;
-//                }
-//            }
-//
-//            Astronauts astr[n];
-//            int i = 0;
-//            
-//            while(i<n){
-//                cout<<"Enter the details of Astronaut "<<i+1<<endl;
-//                astr[i].input_astronaut_data();
-//                cout<<endl;
-//                i++;
-//            }
-//            
-//            cout<<"The Astronaut details for "<<n<<" astronauts:\n";
-//            i = 0;
-//            while(i<n){
-//                astr[i].astronaut_data();
-//                cout<<endl;
-//                i++;
-//            }
-//            break;
-//        }
-//            
-//        case 'R': {
-//            int n = 0;
-//            while(!n) {
-//                cout<<"Enter the number of rockets:\n";
-//                cin>>n;
-//                if(n < 1){
-//                    cout<<"Size cannot be less than 1. Re-enter the size.\n";
-//                    continue;
-//                }
-//            }
-//            
-//            Rockets rcts[n];
-//            int j = 0;
-//            
-//            while(j<n){
-//                cout<<"Enter the details of Rocket "<<j+1<<endl;
-//                rcts[j].input_details();
-//                cout<<endl;
-//                j++;
-//            }
-//            
-//            cout<<"The Rocket details for "<<n<<" rockets:\n";
-//            j = 0;
-//            while(j<n){
-//                rcts[j].rocket_details();
-//                cout<<endl;
-//                j++;
-//            }
-//            break;
-//        }
-//            
-//        default:
-//            cout<<"Something went wrong\n";
-//    }
+    Rockets r1(311, 60.0, 100.0, 9.0, "Falcon", "Cape Canaveral", "Mars");
+    Rockets r2(102, 40.0, 90.0, 4.5, "Atlas", "Texas", "Moon");
+//    cout<<"Rocket Name: "<<r1[0]<<endl;
+//    cout<<"Launch Site: "<<r1[1]<<endl;
+//    cout<<"Target Destination: "<< r1[2]<<endl;
     
-//---------------------------------------------------------------------------------------------------------
+    if (r1 == r2)
+            cout << "Rockets are equal.\n\n";
+        else
+            cout << "Rockets are not equal.\n\n";
     
-    /*
-
-         Rockets r1(55.6, 5.4, "Vulcan_Centaur");
-         Astronauts a1("John", "Doe", "Lunar Mission", 32, 3, 120, 250);
-         Satellites s1("ComSat-X", "Communication", 1500.5, "GEO");
-
-         // Display rocket, astronaut, and satellite details
-         r1.rocket_details();
-         a1.astronaut_data();
-         s1.satellite_details();
-
-         // Create a mission
-         MissionControl mission("MoonLanding", r1, a1);
-         mission.startMission();
-         mission.missionDetails();
-
-     */
-    
-
-    //Astronauts a1("Michael", "Trevor", "Artemis Moon Landing", 31, 4, 57, 142);
-    //a1.input_astronaut_data("Adrino", "Rosario", 45);
-
-    Rockets r1 = Rockets(55.6, 5.4, "Vulcan_Centaur");
-//    Rockets r2 = Rockets(40.6, 4.4, "Firefly_Alpha");
-//    //a1.astronaut_data();
-//    //r1.input_details();
-//    displayMissionSummary(r1);
-    
-    cout<<"Returning rocket name using return by reference: "<<r1.getRocketName()<<endl;
+    cout << "Before incrementing Rocked ID of " << r1.rocket_name <<": "<<r1.rocket_id<<endl;
+    ++r1;
+    cout << "After incrementing Rocket ID of " << r1.rocket_name << ": " << r1.rocket_id << endl << endl;
+    cout << "Before decrementing Rocked ID of " << r2.rocket_name <<": "<<r2.rocket_id<<endl;
+    --r2;
+    cout << "After decrementing Rocket ID of " << r2.rocket_name << ": " << r2.rocket_id << endl << endl;
     
     
-    // Pass by value (no change to the original object)
-    r1.updateRocketDetailsByValue(r1);
-    r1.rocket_details();  // Name should remain the same
+    cout<<"Rocket name using subscript overloading: "<<r1[0]<<endl;
+    cout<<"Rocket launch site using subscript overloading: "<<r2[1]<<endl;
 
-    // Pass by reference (changes the original object)
-    r1.updateRocketDetailsByReference(r1);
-    r1.rocket_details();  // Name should be modified
     
-    Rockets r2 = r1;
-    r2.rocket_details();
+    int MAX_ITEMS = 100;
     
-    cout << "Total Rockets: " << Rockets::getTotalRockets() << endl << endl;
+    Rockets* rockets = new Rockets[MAX_ITEMS];
+    Astronauts* astronauts = new Astronauts[MAX_ITEMS];
+    Satellites* satellites = new Satellites[MAX_ITEMS];
+    MissionControl* mission_control = new MissionControl[MAX_ITEMS];
+    ISS iss;
+    
+    int rocket_count = 0;
+    int astronaut_count = 0;
+    int satellite_count = 0;
+    char choice;
+    
+    do {
+        cout << "\nSpace Flight Control and Launch System\n";
+        cout << "1. Manage Rockets\n";
+        cout << "2. Manage Astronauts\n";
+        cout << "3. Manage Satellites\n";
+        cout << "4. Manage ISS\n";
+        cout << "5. Mission Control (currently not yet implemented in the program)\n";
+        cout << "6. Exit\n\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+        
+        switch (choice) {
+            case '1': {
+                int subchoice;
+                cout << "Rocket Management\n";
+                cout << "1. Add a new rocket\n";
+                cout << "2. View all rockets\n";
+                cout << "Enter your choice: ";
+                cin>>subchoice;
+                
+                if (subchoice == 1) {
+                    if (rocket_count < MAX_ITEMS) {
+                        rockets[rocket_count].input_details();
+                        rocket_count++;
+                        cout<<"Rocket added successfully.\n";
+                    } else {
+                        cout<<"Maximum rocket count reached!\n";
+                    }
+                } else if (subchoice == 2) {
+                    if (rocket_count > 0) {
+                        for (int i = 0; i < rocket_count; i++) {
+                            cout << "Rocket " << i + 1 << ":\n";
+                            rockets[i].rocket_details();
+                        }
+                    } else {
+                        cout<<"No rockets to display.\n";
+                    }
+                } else {
+                    cerr<<"Invalid choice.\n";
+                }
+                break;
+            }
+            case '2': {
+                int subchoice;
+                cout<<"ASTRONAUT MANAGEMENT\n";
+                cout<<"1. Add a new astronaut.\n";
+                cout<<"2. View all astronauts.\n";
+                cout<<"Enter your choice: ";
+                cin>>subchoice;
+                
+                if(subchoice == 1) {
+                    if(astronaut_count < MAX_ITEMS) {
+                        astronauts[astronaut_count].input_astronaut_data();
+                        astronaut_count++;
+                        cout << "Astronaut added successfully.\n";
+                    } else {
+                        cout<<"Maximum astronaut count reached!\n";
+                    }
+                } else if(subchoice == 2) {
+                    if(astronaut_count > 0) {
+                        for(int i=0; i<astronaut_count; i++) {
+                            cout<<"Astronaut " << i+1 << ":\n";
+                            astronauts[i].astronaut_data();
+                        }
+                    } else {
+                        cout<<"No astronauts to display.\n";
+                    }
+                } else {
+                    cerr<<"Invalid choice. Please try again.\n";
+                }
+                break;
+            }
+            case '3': {
+                int subchoice;
+                cout<<"SATELLITE MANAGEMENT\n";
+                cout<<"1. Add a new satellite.\n";
+                cout<<"2. View all satellites.\n";
+                cout<<"Enter your choice: ";
+                cin>>subchoice;
+                
+                if(subchoice == 1) {
+                    if(satellite_count < MAX_ITEMS) {
+                        satellites[satellite_count].input_satellite_details();
+                        satellite_count++;
+                        cout << "Satellite added successfully.\n";
+                    } else {
+                        cout<<"Maximum satellite count reached!\n";
+                    }
+                } else if(subchoice == 2) {
+                    if(satellite_count > 0) {
+                        for(int i=0; i<satellite_count; i++) {
+                            cout << "Satellite " << i+1 << ":\n";
+                            satellites[i].satellite_details();
+                        }
+                    } else {
+                        cout<<"No satellites to display.\n";
+                    }
+                } else {
+                    cerr<<"Invalid choice. Please try again.\n";
+                }
+                break;
+            }
+            case '4': {
+                int choice;
+                cout<<"ISS MANAGEMENT\n";
+                cout<<"1. Display ISS Status.\n";
+                cout<<"2. Update resource status.\n";
+                cout<<"3. Dock spacecraft.\n";
+                cout<<"4. Undock spacecraft.\n";
+                cout<<"5. Add crew member.\n";
+                cout<<"6. Remove crew member.\n";
+                cout<<"7. Launch ISS.\n";
+                cout<<"Enter your choice: ";
+                cin>>choice;
 
+                if(choice == 1)
+                    iss.displayStatus();
+                else if(choice == 2) {
+                    iss.updateResourceStatus();
+                    iss.displayStatus();
+                } else if(choice == 3) {
+                    Rockets r;
+                    cout<<"Enter the details of the spacecraft you want to dock: \n";
+                    r.input_details();
+                    iss.dockSpacecraft(r);
+                } else if(choice == 4) {
+                    iss.undockSpacecraft();
+                } else if(choice == 5) {
+                    iss.addCrewMember();
+                } else if(choice == 6) {
+                    iss.removeCrewMember();
+                } else if(choice == 7) {
+                    iss.launch();
+                } else {
+                    cerr<<"Invalid choice. Please try again.\n";
+                }
+                break;
+            }
+            case '5':
+                /*
+                 Currently causing the code to dive into an infinite loop,
+                 needs to be resolved to implement efficient access and usage of memory
+                 */
+                cout << "Mission Control - Not implemented yet\n";
+                break;
+            case '6':
+                cout << "Exiting program.\n";
+                break;
+            default:
+                cerr<<"Invalid choice. Please try again.\n";
+        }
+    } while (choice != '6');
+    
+    // dynamic memory deallocation
+    delete [] rockets;
+    delete [] astronauts;
+    delete [] satellites;
+    delete [] mission_control;
+    
     return 0;
 }
-
