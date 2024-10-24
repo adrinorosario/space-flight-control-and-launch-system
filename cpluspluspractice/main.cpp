@@ -225,7 +225,6 @@ private:
     
 public:
     SpaceShuttle() {
-        Rockets();
         passengerCount = 0;
         isReusable = true;
     }
@@ -268,7 +267,7 @@ public:
         engineType = type; thrust = t;
     }
     
-    void displayEngineDetails() const {
+    void displayEngineDetails() {
         cout << "Engine Type: " << engineType << ", Thrust: " << thrust << " kN" << endl;
     }
 };
@@ -283,8 +282,6 @@ public:
     Spacecraft() {
         propulsion_system = "";
         crewCapacity = 0;
-        Rockets();
-        Rockets::input_details();
     }
     
     void input_propulsion() {
@@ -696,16 +693,16 @@ int main() {
     
     int MAX_ITEMS = 100;
     
-    Rockets* rockets = new Rockets[MAX_ITEMS];
-    Astronauts* astronauts = new Astronauts[MAX_ITEMS];
-    Satellites* satellites = new Satellites[MAX_ITEMS];
-    MissionControl* mission_control = new MissionControl[MAX_ITEMS];
+    Rockets *rockets = new Rockets[MAX_ITEMS];
+    Astronauts *astronauts = new Astronauts[MAX_ITEMS];
+    Satellites *satellites = new Satellites[MAX_ITEMS];
+    MissionControl *mission_control = new MissionControl[MAX_ITEMS];
     ISS iss;
     
-    SpaceShuttle* shuttles = new SpaceShuttle[MAX_ITEMS];
-    Spacecraft* spacecrafts = new Spacecraft[MAX_ITEMS];
-    Rover* rovers = new Rover[MAX_ITEMS];
-    Engine* engines = new Engine[MAX_ITEMS];
+    SpaceShuttle *shuttles = new SpaceShuttle[MAX_ITEMS];
+    Spacecraft *spacecrafts = new Spacecraft[MAX_ITEMS];
+    Rover *rovers = new Rover[MAX_ITEMS];
+    Engine *engines = new Engine[MAX_ITEMS];
     
     int shuttle_count = 0;
     int spacecraft_count = 0;
@@ -723,7 +720,7 @@ int main() {
         cout << "2. Manage Astronauts\n";
         cout << "3. Manage Satellites\n";
         cout << "4. Manage ISS\n";
-        cout << "5. Mission Control (currently not yet implemented in the program)\n";
+        cout << "5. Advanced Space Vehicles management (Rovers, Space Shuttles and more)\n";
         cout << "6. Exit\n\n";
         cout << "Enter your choice: ";
         cin >> choice;
