@@ -13,7 +13,7 @@ using namespace std;
 
 class Rockets {
 private:
-    static int totalRockets;
+    static int totalRockets; // stores the total number of rockets
     float height, diameter, fuel_level, thrust;
     string launch_site, target_destination;
     bool inputStatus;
@@ -78,25 +78,29 @@ public:
         totalRockets++;
     }
     
+    //compares if 2 rockets have the same name or rocket_id
     bool operator==(Rockets &x) {
         return(this -> rocket_name == x.rocket_name || this -> rocket_id == x.rocket_id);
     }
     
+    // compares the height of two rockets
     bool operator>(Rockets &x) const {
         return this->height > x.height;
     }
     
+    // increments the rocket_id of the current object by 1
     Rockets& operator++() {
         this->rocket_id++;
         return *this;
     }
     
-    
+    // decrements the rocket_id of the current object by 1
     Rockets& operator--() {
         this->rocket_id--;
         return *this;
     }
     
+    // checks the fuel level of the current object
     bool operator!() {
         return this->fuel_level < 50.0; // true if fuel is too low for launching the rocket
     }
@@ -106,7 +110,11 @@ public:
         return totalRockets;
     }
     
-    // Overload [] operator (subscript operator)
+    /* overloading the [] operator (subscript operator) and passing different values based on the index passed
+     0 returns the rocket_name
+     1 returns the name launch_site
+     2 returns the target_destination
+     */
     string &operator[](int index) {
         if (index == 0)
             return rocket_name;
@@ -151,13 +159,13 @@ public:
         cout<<"\n\nRocket name: "<<rocket_name<<"\nRocket ID: "<<rocket_id<<"\nHeight: "<<height<<"\nDiameter: "<<diameter<<"\nLaunch Site: "<<launch_site<<"\nTarget Destination: "<<target_destination<<endl<<endl;
     }
     
-    // Pass by value (makes a copy of the object)
+    // pass by value (makes a copy of the object)
     void updateRocketDetailsByValue(Rockets rocket) {
         rocket.rocket_name = "Updated_" + rocket.rocket_name;
         cout << "Inside updateRocketDetailsByValue: " << rocket.rocket_name << endl;
     }
     
-    // Pass by reference (modifies the original object)
+    // pass by reference (modifies the original object)
     void updateRocketDetailsByReference(Rockets &rocket) {
         rocket.rocket_name = "Modified_" + rocket.rocket_name;
         cout << "Inside updateRocketDetailsByReference: " << rocket.rocket_name << endl;
@@ -499,6 +507,7 @@ public:
         dockingPortAvailable = true;
     }
     
+    // virtual function overriden from SpaceVehicle
     virtual void launch() override {
         cout<<"ISS already in orbit\n\n";
     }
@@ -523,7 +532,6 @@ public:
     }
     
     void undockSpacecraft() {
-        
         dockingPortAvailable = true;
         cout<<"Spacecraft undocked from ISS.\n";
     }
@@ -546,6 +554,7 @@ public:
         }
     }
     
+    // virtual function overriden from SpaceVehicle
     virtual void displayStatus() override {
         cout<<"\n---ISS Status---"<<endl;
         cout<<"Altitude: "<<altitude<< " km"<<endl;
@@ -659,14 +668,14 @@ public:
 
 
 int main() {
-    cout << "Starting program with basic menu and Rockets functionality...\n\n";
+    clog<<"Starting program with basic menu and Rockets functionality...\n\n";
 
     
     Rockets r1(311, 60.0, 100.0, 9.0, "Falcon", "Cape Canaveral", "Mars");
     Rockets r2(102, 40.0, 90.0, 4.5, "Atlas", "Texas", "Moon");
-//    cout<<"Rocket Name: "<<r1[0]<<endl;
-//    cout<<"Launch Site: "<<r1[1]<<endl;
-//    cout<<"Target Destination: "<< r1[2]<<endl;
+    cout<<"Rocket Name: "<<r1[0]<<endl;
+    cout<<"Launch Site: "<<r1[1]<<endl;
+    cout<<"Target Destination: "<< r1[2]<<endl;
     
     if (r1 == r2)
             cout << "Rockets are equal.\n\n";
@@ -692,6 +701,16 @@ int main() {
     Satellites* satellites = new Satellites[MAX_ITEMS];
     MissionControl* mission_control = new MissionControl[MAX_ITEMS];
     ISS iss;
+    
+    SpaceShuttle* shuttles = new SpaceShuttle[MAX_ITEMS];
+    Spacecraft* spacecrafts = new Spacecraft[MAX_ITEMS];
+    Rover* rovers = new Rover[MAX_ITEMS];
+    Engine* engines = new Engine[MAX_ITEMS];
+    
+    int shuttle_count = 0;
+    int spacecraft_count = 0;
+    int rover_count = 0;
+    int engine_count = 0;
     
     int rocket_count = 0;
     int astronaut_count = 0;
@@ -722,9 +741,10 @@ int main() {
                     if (rocket_count < MAX_ITEMS) {
                         rockets[rocket_count].input_details();
                         rocket_count++;
-                        cout<<"Rocket added successfully.\n";
+                        clog<<"Rocket added successfully.\n\n";
                     } else {
-                        cout<<"Maximum rocket count reached!\n";
+                        clog<<"Maximum rocket count reached!\n";
+                        cout<<"You cannot add more rockets\n\n";
                     }
                 } else if (subchoice == 2) {
                     if (rocket_count > 0) {
@@ -752,9 +772,10 @@ int main() {
                     if(astronaut_count < MAX_ITEMS) {
                         astronauts[astronaut_count].input_astronaut_data();
                         astronaut_count++;
-                        cout << "Astronaut added successfully.\n";
+                        clog<<"Astronaut added successfully.\n";
                     } else {
-                        cout<<"Maximum astronaut count reached!\n";
+                        clog<<"Maximum astronaut count reached!\n";
+                        cout<<"You cannot add more astronauts\n\n";
                     }
                 } else if(subchoice == 2) {
                     if(astronaut_count > 0) {
@@ -782,9 +803,10 @@ int main() {
                     if(satellite_count < MAX_ITEMS) {
                         satellites[satellite_count].input_satellite_details();
                         satellite_count++;
-                        cout << "Satellite added successfully.\n";
+                        clog<<"Satellite added successfully.\n";
                     } else {
-                        cout<<"Maximum satellite count reached!\n";
+                        clog<<"Maximum satellite count reached!\n";
+                        cout<<"You cannot add more satellites\n\n";
                     }
                 } else if(subchoice == 2) {
                     if(satellite_count > 0) {
@@ -836,15 +858,159 @@ int main() {
                 }
                 break;
             }
-            case '5':
-                /*
-                 Currently causing the code to dive into an infinite loop,
-                 needs to be resolved to implement efficient access and usage of memory
-                 */
-                cout << "Mission Control - Not implemented yet\n";
+            case '5': {
+                int subchoice;
+                cout<<"\nAdvanced Space Vehicle Management\n";
+                cout<<"Manage other space vehicles through this sub-system here:\n\n";
+                cout<<"1. Manage Space Shuttles\n";
+                cout<<"2. Manage Spacecrafts\n";
+                cout<<"3. Manage Rovers\n";
+                cout<<"4. Manage Engines\n";
+                cout<<"Enter your choice: ";
+                cin>>subchoice;
+
+                switch(subchoice) {
+                    case 1: {
+                        cout<<"\nSpace Shuttle Management\n";
+                        cout<<"1. Add new shuttle\n";
+                        cout<<"2. View all shuttles\n";
+                        cout<<"Enter choice: ";
+                        int choice;
+                        cin>>choice;
+
+                        if(choice == 1) {
+                            if(shuttle_count < MAX_ITEMS) {
+                                shuttles[shuttle_count].input_details();
+                                shuttles[shuttle_count].setPassengerCount();
+                                shuttles[shuttle_count].setResuability();
+                                shuttle_count++;
+                                clog<<"Shuttle added successfully.\n";
+                            } else {
+                                clog<<"Maximum shuttle count reached!\n";
+                                cout<<"Cannot add more shuttles\n";
+                            }
+                        } else if(choice == 2) {
+                            if(shuttle_count > 0) {
+                                for(int i = 0; i < shuttle_count; i++) {
+                                    cout<<"\nShuttle "<< i + 1 << ":\n";
+                                    shuttles[i].rocket_details();
+                                    shuttles[i].getShuttleDetails();
+                                }
+                            } else {
+                                cout<<"No shuttles to display.\n";
+                            }
+                        }
+                        break;
+                    }
+                    case 2: {
+                        cout<<"\nSpacecraft Management\n";
+                        cout<<"1. Add new spacecraft\n";
+                        cout<<"2. View all spacecrafts\n";
+                        cout<<"Enter choice: ";
+                        int choice;
+                        cin >> choice;
+
+                        if(choice == 1) {
+                            if(spacecraft_count < MAX_ITEMS) {
+                                spacecrafts[spacecraft_count].input_details();
+                                spacecrafts[spacecraft_count].input_propulsion();
+                                cout<<"Enter Engine Type and Thrust (kN): ";
+                                string type;
+                                float thrust;
+                                cin>>type>>thrust;
+                                spacecrafts[spacecraft_count].setEngineDetails(type, thrust);
+                                spacecraft_count++;
+                                clog<<"Spacecraft added successfully.\n";
+                            } else {
+                                clog<<"Maximum spacecraft count reached!\n";
+                                cout<<"Cannot add more spaccrafts\n\n";
+                            }
+                        } else if(choice == 2) {
+                            if(spacecraft_count > 0) {
+                                for(int i = 0; i < spacecraft_count; i++) {
+                                    cout<<"\nSpacecraft " << i + 1 << ":\n";
+                                    spacecrafts[i].displaySpaceCraftDetails();
+                                }
+                            } else {
+                                cout<<"No spacecrafts to display.\n";
+                            }
+                        }
+                        break;
+                    }
+                    case 3: {
+                        cout<<"\nRover Management\n";
+                        cout<<"1. Add new rover\n";
+                        cout<<"2. View all rovers\n";
+                        cout<<"Enter choice: ";
+                        int choice;
+                        cin>>choice;
+
+                        if(choice == 1) {
+                            if(rover_count < MAX_ITEMS) {
+                                rovers[rover_count].input_details();
+                                rovers[rover_count].input_propulsion();
+                                rovers[rover_count].setLife();
+                                rover_count++;
+                                clog<<"Rover added successfully.\n";
+                            } else {
+                                clog<<"Maximum rover count reached!\n";
+                                cout<<"Cannot add more rovers\n\n";
+                            }
+                        } else if(choice == 2) {
+                            if(rover_count > 0) {
+                                for(int i = 0; i < rover_count; i++) {
+                                    cout << "\nRover " << i + 1 << ":\n";
+                                    rovers[i].rocket_details();
+                                    rovers[i].displayRoverDetails();
+                                }
+                            } else {
+                                cout<<"No rovers to display.\n";
+                            }
+                        }
+                        break;
+                    }
+                    case 4: {
+                        cout<<"\nEngine Management\n";
+                        cout<<"1. Add new engine\n";
+                        cout<<"2. View all engines\n";
+                        cout<<"Enter choice: ";
+                        int choice;
+                        cin>>choice;
+
+                        if(choice == 1) {
+                            if(engine_count < MAX_ITEMS) {
+                                string type;
+                                float thrust;
+                                cout<<"Enter Engine Type: ";
+                                cin>>type;
+                                cout<<"Enter Thrust (kN): ";
+                                cin>>thrust;
+                                engines[engine_count].setEngineDetails(type, thrust);
+                                engine_count++;
+                                clog<<"Engine added successfully.\n";
+                            } else {
+                                clog<<"Maximum engine count reached!\n";
+                                cout<<"Cannot add more engines\n\n";
+                            }
+                        } else if(choice == 2) {
+                            if(engine_count > 0) {
+                                for(int i = 0; i < engine_count; i++) {
+                                    cout<<"\nEngine " << i + 1 << ":\n";
+                                    engines[i].displayEngineDetails();
+                                }
+                            } else {
+                                cout<<"No engines to display.\n";
+                            }
+                        }
+                        break;
+                    }
+                    default:
+                        cerr<<"Invalid choice.\n";
+                }
                 break;
+            }
             case '6':
-                cout << "Exiting program.\n";
+                clog<<"Exiting program.\n";
                 break;
             default:
                 cerr<<"Invalid choice. Please try again.\n";
@@ -856,6 +1022,10 @@ int main() {
     delete [] astronauts;
     delete [] satellites;
     delete [] mission_control;
+    delete [] shuttles;
+    delete [] spacecrafts;
+    delete [] rovers;
+    delete [] engines;
     
     return 0;
 }
