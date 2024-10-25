@@ -184,7 +184,7 @@ This project is licensed under the GNU GENERAL PUBLIC LICENSE - see the LICENSE 
 
 ## Author
 
-Adrino Rosario James
+[Adrino Rosario James](https://github.com/adrinorosario)
 
 ## Notes
 
